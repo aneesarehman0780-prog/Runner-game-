@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Runner Game</title>
+<style>
+  canvas { border: 2px solid black; background: skyblue; display: block; margin: auto; }
+  body { text-align: center; font-family: Arial; }
+</style>
+</head>
+<body>
+<h2>Runner Game - Tap to Jump</h2>
+<canvas id="game" width="800" height="400"></canvas>
+<script>
+let canvas = document.getElementById("game");
+let ctx = canvas.getContext("2d");
+
+let playerY = 300, vel = 0, jumping = false;
+let obstacleX = 800, score = 0;
+
+// Jump on tap or space
+document.addEventListener("keydown", e => { if(e.code=="Space") jump() });
+canvas.addEventListener("touchstart", jump);
+canvas.addEventListener("click", jump);
+
+function jump(){
+  if(!jumping){ jumping=true; vel=-15; }
+}
+
+function gameLoop(){
+  ctx.clearRect(0,0,800,400);
+  
+  // ground
+  ctx.fillStyle = "green";
+  ctx.fillRect(0,350,800,50);
+  
+  // jump physics
+  if(jumping){
+    playerY += vel;
+    vel += 1;
+    if(playerY >= 300){ playerY=300; jumping=false; }
+  }
+  
+  // obstacle
+  obstacleX -= 6;
+  if(obstacleX < -50){ obstacleX=800; score++; }
+  
+  // draw player
+  ctx.fillStyle = "red";
+  ctx.fillRect(100, playerY, 50, 50);
+  
+  // draw obstacle
+  ctx.fillStyle = "brown";
+  ctx.fillRect(obstacleX, 300, 50, 50);
+  
+  // score
+  ctx.fillStyle = "black";
+  ctx.font = "30px Arial";
+  ctx.fillText("Score: " + score, 10, 40);
+  
+  requestAnimationFrame(gameLoop);
+}
+gameLoop();
+</script>
+</body>
+</html>
