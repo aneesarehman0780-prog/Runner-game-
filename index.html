@@ -16,10 +16,25 @@ let ctx = canvas.getContext("2d");
 
 let playerY = 300, vel = 0, jumping = false;
 let obstacleX = 800, score = 0;
+let lane = 1; // 0=left, 1=center, 2=right
+let playerX = 299;
+let targetX = 299;
+let speed = 6;
 
-// Jump on tap or space
-document.addEventListener("keydown", e => { if(e.code==="Space") jump(); });
-canvas.addEventListener("touchstart", jump);
+// Jump with keyboard
+document.addEventListener("keydown", e => {
+  if(e.code==="Space"){ jumping=true; vel=-15; }
+});
+
+// Swipe / Tap controls
+document.addEventListener('touchstart', e => {
+  let x = e.touches[0].clientX;
+  let y = e.touches[0].clientY;
+  if(x < 266 && lane > 0){ lane--; } // left side
+  if(x > 533 && lane < 2){ lane++; } // right side
+  if(y < 200){ jumping=true; vel=-15; } // top tap = jump
+  targetX = lane * 266 + 33;
+});
 canvas.addEventListener("click", jump);
 canvas.addEventListener("click", jump);
 
@@ -42,12 +57,25 @@ function gameLoop(){
   }
   
   // obstacle
-  obstacleX -= 6;
+  
+  // smooth lane change
+playerX += (targetX - playerX) * 0.2;
+  obstacleX -= speed;
+  // Collision check
+let playerLane = playerX < 266? 0 : playerX < 533? 1 : 2;
+let obstacleLane = obstacleX < 266? 0 : obstacleX < 533? 1 : 2;
+if(obstacleX < 150 && obstacleX > 50 && playerLane == obstacleLane && playerY > 250){
+  alert("Game Over! Score: " + score);
+  obstacleX = 800;
+  score = 0;
+  speed = 6;
+     }
+  if( score % 5 == 0) speed += 0.5
   if(obstacleX < -50){ obstacleX=800; score++; }
   
   // draw player
   ctx.fillStyle = "red";
-  ctx.fillRect(100, playerY, 50, 50);
+  ctx.fillRect(playerX, playerY, 50, 50);
   
   // draw obstacle
   ctx.fillStyle = "brown";
