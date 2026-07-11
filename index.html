@@ -18,8 +18,9 @@ let playerY = 300, vel = 0, jumping = false;
 let obstacleX = 800, score = 0;
 
 // Jump on tap or space
-document.addEventListener("keydown", e => { if(e.code=="Space") jump() });
+document.addEventListener("keydown", e => { if(e.code==="Space") jump(); });
 canvas.addEventListener("touchstart", jump);
+canvas.addEventListener("click", jump);
 canvas.addEventListener("click", jump);
 
 function jump(){
